@@ -1,11 +1,16 @@
-import React from 'react'
+import React from "react";
+import MenuTile from "../../Components/MenuTile";
 
 function Home() {
   return (
-    <h1 className="text-3xl font-bold underline">
-      Hello world!
-    </h1>
-  )
+    <div className="grid grid-cols-6 grid-rows-5 gap-6 h-[90vh]">
+      <MenuTile col_span={5} row_span={2}></MenuTile>
+      <MenuTile col_span={5} row_span={2}></MenuTile>
+      <MenuTile col_span={2} row_span={2}></MenuTile>
+      <MenuTile col_span={2} row_span={2}></MenuTile>
+      <MenuTile col_span={4} row_span={1}></MenuTile>
+    </div>
+  );
 }
 
-export default Home
+export default Home;

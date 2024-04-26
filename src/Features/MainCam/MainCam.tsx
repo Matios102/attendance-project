@@ -4,9 +4,7 @@ import FaceDetection from "@mediapipe/face_detection";
 import { Camera } from "@mediapipe/camera_utils";
 import Webcam from "react-webcam";
 
-type Props = {};
-
-function MainCam({}: Props) {
+function MainCam() {
   const { webcamRef, boundingBox, isLoading, detected, facesDetected } =
     useFaceDetection({
       faceDetectionOptions: {
@@ -55,6 +53,7 @@ function MainCam({}: Props) {
         ref={webcamRef}
         forceScreenshotSourceSize
         className="w-full h-full object-cover rounded-lg"
+        // mirrored={true}
       />
     </div>
   );

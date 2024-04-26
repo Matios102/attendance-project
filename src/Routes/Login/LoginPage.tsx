@@ -1,4 +1,5 @@
 import { Button, TextField } from "@mui/material";
+import { motion } from "framer-motion";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -67,7 +68,12 @@ function LoginPage() {
   };
 
   return (
-    <div className="w-full flex items-center justify-center divide-x-2 py-20 h-[90vh]">
+    <motion.div
+      className="w-full flex items-center justify-center divide-x-2 py-20 h-[90vh]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <div className="w-full flex flex-col items-center text-center justify-center p-10">
         <h2 className="text-3xl font-bold text-gray-700 my-10">Login</h2>
         <form
@@ -99,7 +105,7 @@ function LoginPage() {
             type="submit"
             variant="contained"
             color="primary"
-            fullWidth={true}            
+            fullWidth={true}
           >
             Login
           </Button>
@@ -165,7 +171,7 @@ function LoginPage() {
           </Button>
         </form>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

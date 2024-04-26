@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "@mui/material";
 import OpenAI from "openai";
 import { RiOpenaiFill } from "react-icons/ri";
+import { motion } from "framer-motion";
 
 const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 const openai = new OpenAI({ apiKey: apiKey, dangerouslyAllowBrowser: true });
@@ -32,6 +33,18 @@ function Chat() {
         "Why don't scientists trust atoms? Because they make up everything!",
       dateTime: new Date(),
     },
+    {
+      message: "Tell me a joke",
+      response:
+        "Why don't scientists trust atoms? Because they make up everything!",
+      dateTime: new Date(),
+    },
+    {
+      message: "Tell me a joke",
+      response:
+        "Why don't scientists trust atoms? Because they make up everything!",
+      dateTime: new Date(),
+    },
   ] as Response[]);
 
   async function sendRequest() {
@@ -54,7 +67,12 @@ function Chat() {
   };
 
   return (
-    <div className="w-full h-[90vh] flex items-center justify-center">
+    <motion.div
+      className="w-full h-[90vh] flex items-center justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <div className="relative w-full h-[70vh] bg-neutral-700 p-5 flex flex-col itmes-center justify-center rounded-lg">
         <div className="w-full flex flex-col items-center justify-center text-center my-5 space-x-2">
           <div className="w-full flex items-center justify-center">
@@ -76,7 +94,8 @@ function Chat() {
               </span>
               <div className={`w-full p-2 rounded-lg bg-neutral-800`}>
                 <p className="text-white font-semibold">
-                  <span className="underline text-green-200">Prompt</span>: {res.message}
+                  <span className="underline text-green-200">Prompt</span>:{" "}
+                  {res.message}
                 </p>
                 <p className="text-white">{res.response}</p>
               </div>
@@ -105,7 +124,7 @@ function Chat() {
           </Button>
         </form>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

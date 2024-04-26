@@ -19,15 +19,15 @@ function MenuTile({
   const colSpanClass = `col-span-${col_span}`;
   const rowSpanClass = `row-span-${row_span}`;
   const colStartClass = col_start ? `col-start-${col_start}` : "";
-  const rowStartClass = row_start ? `row-start-${row_start}` : "";
+  const rowStartClass = row_start ? `row-start-${row_start}` : "";  
   const baseClass =
-    "w-full h-full rounded-lg shadow-md hover:shadow-lg bg-neutral-100 hover:bg-neutral-200 cursor-pointer";
+    "w-full h-full rounded-lg shadow-md hover:shadow-lg cursor-pointer bg-neutral-100 hover:bg-neutral-200";
 
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      className={`${baseClass} ${colSpanClass} ${rowSpanClass} ${colStartClass} ${rowStartClass}`}      
+      className={`${baseClass} ${colSpanClass} ${rowSpanClass} ${colStartClass} ${rowStartClass}`}
     >
       {children}
     </motion.div>

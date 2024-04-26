@@ -2,6 +2,7 @@ import React from "react";
 import MenuTile from "../../Components/MenuTile";
 import MainCam from "../../Features/MainCam/MainCam";
 import { MdLogin, MdAdd, MdPerson } from "react-icons/md";
+import { RiOpenaiFill } from "react-icons/ri";
 import { Link } from "react-router-dom";
 
 function Home() {
@@ -24,7 +25,7 @@ function Home() {
       <MenuTile col_span={2} row_span={1} col_start={6} row_start={1}>
         <Link
           to={isLogged ? "/profile" : "/login"}
-          className="flex items-center justify-center w-full h-full text-5xl text-gray-600"          
+          className="flex items-center justify-center w-full h-full text-5xl text-gray-600"
         >
           {isLogged ? (
             <MdPerson />
@@ -39,12 +40,14 @@ function Home() {
       <MenuTile col_span={4} row_span={3} col_start={3} row_start={2}>
         <MainCam />
       </MenuTile>
-      <MenuTile
-        col_span={1}
-        row_span={3}
-        col_start={7}
-        row_start={2}
-      ></MenuTile>
+      <MenuTile col_span={1} row_span={3} col_start={7} row_start={2}>
+        <Link
+          to="/chat"
+          className="flex items-center justify-center w-full h-full text-5xl text-gray-600"
+        >
+          <RiOpenaiFill />
+        </Link>
+      </MenuTile>
       <MenuTile
         col_span={2}
         row_span={3}

@@ -1,6 +1,5 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { on } from "events";
 
 type Props = {
   col_span: number;

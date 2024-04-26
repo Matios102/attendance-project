@@ -5,7 +5,7 @@ import { Camera } from "@mediapipe/camera_utils";
 import Webcam from "react-webcam";
 
 function MainCam() {
-  const { webcamRef, boundingBox, isLoading, detected, facesDetected } =
+  const { webcamRef, boundingBox, detected, facesDetected } =
     useFaceDetection({
       faceDetectionOptions: {
         model: "short",

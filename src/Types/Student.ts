@@ -5,3 +5,10 @@ export type StudentInfo = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type StudentMeetingInfo = {
+  id: number;
+  name: string;
+  email: string;
+  present: boolean;
+};

@@ -9,6 +9,8 @@ import { useSelector } from "react-redux";
 import { selectIsLoggedIn } from "./store/slices/User";
 import MyClasses from "./Routes/MyClasses/MyClasses";
 import Class from "./Routes/Class/Class";
+import Meeting from "./Routes/Meeting/Meeting";
+import Data from "./Routes/Data/Data";
 
 function App() {
   const isLoggedIn = useSelector(selectIsLoggedIn);
@@ -24,9 +26,11 @@ function App() {
               <Route path="/chat" element={<Chat />} />,
               <Route path="/my-classes" element={<MyClasses />} />,
               <Route path="/class/:id" element={<Class />} />,
+              <Route path="/meeting/:id" element={<Meeting />} />,
             ]
           : null}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/data" element={<Data />} />
         <Route path="*" element={<Navigate replace={true} to="/" />} />
       </Routes>
     </div>

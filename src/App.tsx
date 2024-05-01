@@ -17,7 +17,7 @@ function App() {
       <TopBar />
       <Routes>
         <Route path="/" element={<Home />} />
-        {isLoggedIn
+        {!isLoggedIn
           ? [
               <Route path="/profile" element={<div>Profile</div>} />,
               <Route path="/chat" element={<Chat />} />,

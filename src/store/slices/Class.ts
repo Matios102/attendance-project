@@ -10,7 +10,29 @@ const ClassSlice = createSlice({
         name: "Math",
         description: "Math class",
         teacherId: 1,
-        students: [1, 2, 3],
+        students: [
+          {
+            id: 1,
+            name: "John Doe",
+            email: "johndoe@gmail.com",
+            createdAt: "2021-01-01",
+            updatedAt: "2021-01-01",
+          },
+          {
+            id: 2,
+            name: "John Smith",
+            email: "johnsmith@gmail.com",
+            createdAt: "2021-01-01",
+            updatedAt: "2021-01-01",
+          },
+          {
+            id: 3,
+            name: "John Extra",
+            email: "johnextra@gmail.com",
+            createdAt: "2021-01-01",
+            updatedAt: "2021-01-01",
+          },
+        ],
         weekDay: 1,
         startTime: "10:00",
         endTime: "12:00",
@@ -22,7 +44,7 @@ const ClassSlice = createSlice({
         name: "Science",
         description: "Science class",
         teacherId: 2,
-        students: [1, 2, 3],
+        students: [],
         weekDay: 2,
         startTime: "10:00",
         endTime: "11:00",
@@ -63,6 +85,9 @@ const ClassSlice = createSlice({
 });
 
 export const selectClassList = (state: any): Class[] => state.class.classList;
+
+export const selectClassById = (state: any, id: number): Class | undefined =>
+  state.class.classList.find((classItem: Class) => classItem.id === id);
 
 export const { saveClass, removeClass } = ClassSlice.actions;
 

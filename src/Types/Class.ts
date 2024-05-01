@@ -1,9 +1,11 @@
+import { StudentInfo } from "./Student";
+
 export type Class = {
   id: number | null;
   name: string;
   description: string;
   teacherId: number;
-  students: number[];
+  students: StudentInfo[];
   weekDay: number;
   startTime: string;
   endTime: string;

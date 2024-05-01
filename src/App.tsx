@@ -8,6 +8,7 @@ import TopBar from "./Components/TopBar";
 import { useSelector } from "react-redux";
 import { selectIsLoggedIn } from "./store/slices/User";
 import MyClasses from "./Routes/MyClasses/MyClasses";
+import Class from "./Routes/Class/Class";
 
 function App() {
   const isLoggedIn = useSelector(selectIsLoggedIn);
@@ -22,6 +23,7 @@ function App() {
               <Route path="/profile" element={<div>Profile</div>} />,
               <Route path="/chat" element={<Chat />} />,
               <Route path="/my-classes" element={<MyClasses />} />,
+              <Route path="/class/:id" element={<Class />} />,
             ]
           : null}
         <Route path="/login" element={<LoginPage />} />

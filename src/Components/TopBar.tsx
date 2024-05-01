@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { MdHome, MdArrowBack } from "react-icons/md";
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
@@ -33,15 +33,29 @@ function TopBar() {
   const classes = useSelector(selectClassList);
 
   return (
-    <div className="w-full h-12 flex items-center justify-between p-10">
-      <Link
-        to="/"
-        className="text-5xl text-gray-600 cursor-pointer hover:text-gray-400 hover:drop-shadow-md"
-      >
-        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-          {location.pathname !== "/" ? <MdArrowBack /> : <MdHome />}
+    <div className="w-full h-12 flex items-center justify-between py-10">
+      <div className="flex items-center space-x-2">
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="text-5xl text-gray-600 cursor-pointer hover:text-gray-400 hover:drop-shadow-md"
+          onClick={() => {
+            navigate("/");
+          }}
+        >
+          <MdHome />
         </motion.div>
-      </Link>
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="text-5xl text-gray-600 cursor-pointer hover:text-gray-400 hover:drop-shadow-md"
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          <MdArrowBack />
+        </motion.div>
+      </div>
       <div className="text-2xl text-gray-600 flex items-center space-x-2">
         <div className="text-right">{currentTime.toLocaleTimeString()}</div>
         <div className="overflow-hidden w-[90px] h-16 relative flex items-center">

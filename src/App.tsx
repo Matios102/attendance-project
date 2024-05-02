@@ -11,6 +11,7 @@ import MyClasses from "./Routes/MyClasses/MyClasses";
 import Class from "./Routes/Class/Class";
 import Meeting from "./Routes/Meeting/Meeting";
 import Data from "./Routes/Data/Data";
+import Profile from "./Routes/Profile/Profile";
 
 function App() {
   const isLoggedIn = useSelector(selectIsLoggedIn);
@@ -20,9 +21,9 @@ function App() {
       <TopBar />
       <Routes>
         <Route path="/" element={<Home />} />
-        {!isLoggedIn
+        {isLoggedIn
           ? [
-              <Route path="/profile" element={<div>Profile</div>} />,
+              <Route path="/profile" element={<Profile />} />,
               <Route path="/chat" element={<Chat />} />,
               <Route path="/my-classes" element={<MyClasses />} />,
               <Route path="/class/:id" element={<Class />} />,

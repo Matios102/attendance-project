@@ -1,6 +1,23 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
+import { User } from "../../Types/User";
+
+const extractToken = (token: string) => {
+  const decodedToken = jwtDecode(token) as {
+    user: User;
+    exp: string;
+  };
+  const user = decodedToken.user;
+  const tokenExp = decodedToken.exp;
+  Cookies.set("user", JSON.stringify(user), {
+    expires: new Date(tokenExp),
+  });
+  Cookies.set("token", JSON.stringify(token), {
+    expires: new Date(tokenExp),
+  });
+};
 
 export const register = createAsyncThunk(
   "user/register",
@@ -14,7 +31,7 @@ export const register = createAsyncThunk(
     password: string;
   }) => {
     const response = await axios.post(
-      `${process.env.REACT_APP_SERVER_URL}/register`,
+      `${process.env.REACT_APP_SERVER_URL}/users`,
       {
         name: name,
         email: email,
@@ -44,15 +61,12 @@ const UserSlice = createSlice({
   initialState: {
     loginStatus: "idle",
     registerStatus: "idle",
-    userId: -1,
   } as {
     loginStatus: string;
     registerStatus: string;
-    userId: number;
   },
   reducers: {
     logout: (state) => {
-      state.userId = -1;
       Cookies.remove("user");
     },
   },
@@ -61,8 +75,10 @@ const UserSlice = createSlice({
       .addCase(register.pending, (state) => {
         state.registerStatus = "loading";
       })
-      .addCase(register.fulfilled, (state) => {
+      .addCase(register.fulfilled, (state, action) => {
         state.registerStatus = "succeeded";
+        const token = action.payload.access_token;
+        extractToken(token);
       })
       .addCase(register.rejected, (state) => {
         state.registerStatus = "failed";
@@ -72,13 +88,8 @@ const UserSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.loginStatus = "succeeded";
-        state.userId = action.payload.user.user_id;
-        Cookies.set("user", JSON.stringify(action.payload.user), {
-          expires: new Date(Date.now() + 1000 * 60 * 60),
-        });
-        Cookies.set("token", JSON.stringify(action.payload.token), {
-          expires: new Date(Date.now() + 1000 * 60 * 60),
-        });
+        const token = action.payload.access_token;
+        extractToken(token);
       })
       .addCase(login.rejected, (state) => {
         state.loginStatus = "failed";
@@ -91,7 +102,9 @@ export const selectRegisterStatus = (state: any): string =>
 
 export const selectLoginStatus = (state: any): string => state.user.loginStatus;
 
-export const selectUserId = (state: any): number => state.user.userId;
+export const selectUser = (): User => {
+  return JSON.parse(Cookies.get("user") || "{}");
+};
 
 export const selectIsLoggedIn = (): boolean => {
   return !!Cookies.get("user") && !!Cookies.get("token");

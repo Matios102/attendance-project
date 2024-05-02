@@ -2,8 +2,12 @@ import { Button, TextField } from "@mui/material";
 import { motion } from "framer-motion";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { register } from "../../store/slices/User";
+import { useAppDispatch } from "../../store/store";
 
 function LoginPage() {
+  const dispatch = useAppDispatch();
+
   const navigate = useNavigate();
 
   const [name, setName] = React.useState("");
@@ -36,8 +40,7 @@ function LoginPage() {
     if (!email || !password) {
       setError("Please enter both email and password");
       return;
-    }
-
+    }    
     setEmail("");
     setPassword("");
     setError("");
@@ -58,6 +61,8 @@ function LoginPage() {
       return;
     }
 
+    dispatch(register({ name, email, password }));
+    
     setName("");
     setEmail("");
     setPassword("");

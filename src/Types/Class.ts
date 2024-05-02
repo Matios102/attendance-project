@@ -12,3 +12,10 @@ export type Class = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type ClassCreate = {
+  name: string;
+  weekDay: number;
+  startTime: string;
+  endTime: string;
+};

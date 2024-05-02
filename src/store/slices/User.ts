@@ -3,18 +3,19 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { User } from "../../Types/User";
+import { Status } from "../../Types/Status";
 
 const extractToken = (token: string) => {
   const decodedToken = jwtDecode(token) as {
     user: User;
-    exp: string;
+    exp: number;
   };
   const user = decodedToken.user;
-  const tokenExp = decodedToken.exp;
+  const tokenExp = decodedToken.exp * 1000;
   Cookies.set("user", JSON.stringify(user), {
     expires: new Date(tokenExp),
   });
-  Cookies.set("token", JSON.stringify(token), {
+  Cookies.set("token", token, {
     expires: new Date(tokenExp),
   });
 };
@@ -62,8 +63,8 @@ const UserSlice = createSlice({
     loginStatus: "idle",
     registerStatus: "idle",
   } as {
-    loginStatus: string;
-    registerStatus: string;
+    loginStatus: Status;
+    registerStatus: Status;
   },
   reducers: {
     logout: (state) => {

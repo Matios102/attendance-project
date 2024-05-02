@@ -47,6 +47,7 @@ function TopBar() {
         }
         stripes.push(
           <div
+            key={minute}
             className={`flex flex-col items-center justify-center absolute top-0 w-[2px] z-10 overflow-visible`}
             style={{ left: `${position}px` }}
           >

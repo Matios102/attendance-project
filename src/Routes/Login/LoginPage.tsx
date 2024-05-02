@@ -2,7 +2,7 @@ import { Button, TextField } from "@mui/material";
 import { motion } from "framer-motion";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { register } from "../../store/slices/User";
+import { login, register } from "../../store/slices/User";
 import { useAppDispatch } from "../../store/store";
 
 function LoginPage() {
@@ -41,6 +41,9 @@ function LoginPage() {
       setError("Please enter both email and password");
       return;
     }    
+
+    dispatch(login({ email, password }));
+
     setEmail("");
     setPassword("");
     setError("");
@@ -62,7 +65,7 @@ function LoginPage() {
     }
 
     dispatch(register({ name, email, password }));
-    
+
     setName("");
     setEmail("");
     setPassword("");

@@ -1,94 +1,67 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { Class } from "../../Types/Class";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { Class, ClassCreate } from "../../Types/Class";
+import axios from "axios";
+import { Status } from "../../Types/Status";
+
+export const getClasses = createAsyncThunk("class/getClasses", async () => {
+  const response = await axios.get(
+    `${process.env.REACT_APP_SERVER_URL}/classes/`,
+    { withCredentials: true }
+  );
+  return response.data;
+});
+
+export const createClass = createAsyncThunk(
+  "class/createClass",
+  async (newClass: ClassCreate) => {
+    const response = await axios.post(
+      `${process.env.REACT_APP_SERVER_URL}/classes/`,
+      newClass,
+      { withCredentials: true }
+    );
+    return response.data;
+  }
+);
 
 const ClassSlice = createSlice({
   name: "class",
   initialState: {
-    classList: [
-      {
-        id: 1,
-        name: "Math",
-        description: "Math class",
-        teacherId: 1,
-        students: [
-          {
-            id: 1,
-            name: "John Doe",
-            email: "johndoe@gmail.com",
-            createdAt: "2021-01-01",
-            updatedAt: "2021-01-01",
-          },
-          {
-            id: 2,
-            name: "John Smith",
-            email: "johnsmith@gmail.com",
-            createdAt: "2021-01-01",
-            updatedAt: "2021-01-01",
-          },
-          {
-            id: 3,
-            name: "John Extra",
-            email: "johnextra@gmail.com",
-            createdAt: "2021-01-01",
-            updatedAt: "2021-01-01",
-          },
-        ],
-        weekDay: 1,
-        startTime: "10:00",
-        endTime: "12:00",
-        createdAt: "2021-01-01",
-        updatedAt: "2021-01-01",
-      },
-      {
-        id: 2,
-        name: "Science",
-        description: "Science class",
-        teacherId: 2,
-        students: [],
-        weekDay: 2,
-        startTime: "10:00",
-        endTime: "11:00",
-        createdAt: "2021-01-01",
-        updatedAt: "2021-01-01",
-      },
-    ],
+    classList: [],
+    getClassesStatus: "idle",
+    createClassStatus: "idle",
   } as {
     classList: Class[];
+    getClassesStatus: Status;
+    createClassStatus: Status;
   },
-  reducers: {
-    saveClass: (state, action: { payload: Class }) => {
-      const newClass = action.payload;
-
-      const existingClass = newClass?.id != null;
-
-      if (existingClass) {
-        state.classList = state.classList.map((classItem) =>
-          classItem.id === newClass.id ? newClass : classItem
-        );
-        return;
-      }
-
-      state.classList.push({
-        ...newClass,
-        id: state.classList.length + 1,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
-    },
-    removeClass: (state, action) => {
-      state.classList = state.classList.filter(
-        (classItem) => classItem.id !== action.payload
-      );
-    },
+  reducers: {},
+  extraReducers(builder) {
+    builder.addCase(getClasses.fulfilled, (state, action) => {
+      state.classList = action.payload;
+      state.getClassesStatus = "succeeded";
+    });
+    builder.addCase(getClasses.pending, (state) => {
+      state.getClassesStatus = "loading";
+    });
+    builder.addCase(getClasses.rejected, (state) => {
+      state.getClassesStatus = "failed";
+    });
+    builder.addCase(createClass.pending, (state) => {
+      state.createClassStatus = "loading";
+    });
+    builder.addCase(createClass.fulfilled, (state, action) => {
+      state.createClassStatus = "succeeded";
+      state.classList.push(action.payload);
+    });
+    builder.addCase(createClass.rejected, (state) => {
+      state.createClassStatus = "failed";
+    });
   },
-  extraReducers(builder) {},
 });
 
 export const selectClassList = (state: any): Class[] => state.class.classList;
 
 export const selectClassById = (state: any, id: number): Class | undefined =>
   state.class.classList.find((classItem: Class) => classItem.id === id);
-
-export const { saveClass, removeClass } = ClassSlice.actions;
 
 export default ClassSlice.reducer;

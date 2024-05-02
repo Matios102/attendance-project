@@ -1,15 +1,12 @@
-import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  selectClassList,
-  saveClass,
-  removeClass,
-} from "../../store/slices/Class";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { createClass, getClasses, selectClassList } from "../../store/slices/Class";
 import { Backdrop } from "@mui/material";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { MdDelete, MdLink } from "react-icons/md";
-import { Class } from "../../Types/Class";
+import { ClassCreate } from "../../Types/Class";
+import { useAppDispatch } from "../../store/store";
 
 interface HourSelection {
   day: number;
@@ -19,8 +16,14 @@ interface HourSelection {
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
 function Calendar() {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(getClasses());
+  }, [dispatch]);
+
   const classes = useSelector(selectClassList);
-  const dispatch = useDispatch();
+
   const [selectedHour, setSelectedHour] = useState<HourSelection | null>(null);
   const [newClassName, setNewClassName] = useState<string>("");
   const [newClassStartTime, setNewClassStartTime] = useState<string>("");
@@ -49,25 +52,19 @@ function Calendar() {
 
   const handleSaveClass = () => {
     if (selectedHour) {
-      const newClass: Class = {
-        id: null,
+      const newClass: ClassCreate = {
         name: newClassName,
         weekDay: selectedHour.day,
         startTime: newClassStartTime,
         endTime: newClassEndTime,
-        description: "",
-        teacherId: 0,
-        students: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
       };
-      dispatch(saveClass(newClass));
+      dispatch(createClass(newClass));
       setSelectedHour(null);
     }
   };
 
   const handleRemoveClass = (id: number) => {
-    dispatch(removeClass(id));
+    //
   };
 
   const calculateHeight = (start: string, end: string): string => {

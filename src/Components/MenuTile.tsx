@@ -24,16 +24,16 @@ function MenuTile({
     <motion.div
       whileHover={{ scale: disabled ? 1.0 : 1.05 }}
       whileTap={{ scale: disabled ? 1.0 : 0.95 }}
+      style={{
+        gridColumnStart: col_start,
+        gridColumnEnd: col_start + col_span,
+        gridRowStart: row_start,
+        gridRowEnd: row_start + row_span,
+      }}
       className={`w-full h-full rounded-lg shadow-md bg-neutral-100 ${
         disabled
           ? "opacity-50 cursor-not-allowed"
           : "cursor-pointer hover:shadow-lg hover:bg-neutral-200"
-      }
-             ${col_span ? `col-span-${col_span}` : ""} ${
-        row_span ? `row-span-${row_span}` : ""
-      }
-             ${col_start ? `col-start-${col_start}` : ""} ${
-        row_start ? `row-start-${row_start}` : ""
       }`}
       onClick={onClick}
     >

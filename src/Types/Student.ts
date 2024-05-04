@@ -1,3 +1,10 @@
+export type StudentBase = {
+  id: number;
+  name: string;
+  email: string;
+};
+
+
 export type StudentInfo = {
   id: number;
   name: string;

@@ -15,12 +15,20 @@ import {
 } from "../../store/slices/Class";
 import Page from "../../Components/Page";
 import StatusInfo from "../../Components/StatusInfo";
+import {
+  getStudentsBySearchTerm,
+  selectGetStudentsBySearchTermError,
+  selectGetStudentsBySearchTermStatus,
+  selectStudents,
+} from "../../store/slices/Student";
 
 function ClassComponent() {
   const { id } = useParams<{ id: string }>();
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  const [studentGetSearchTerm, setStudentGetSearchTerm] = useState("");
 
   useEffect(() => {
     if (id) {
@@ -29,6 +37,14 @@ function ClassComponent() {
       navigate("/my-classes");
     }
   }, [dispatch, id, navigate]);
+
+  const studentsSearch = useSelector(selectStudents);
+  const getStudentsBySearchTermStatus = useSelector(
+    selectGetStudentsBySearchTermStatus
+  );
+  const getStudentsBySearchTermError = useSelector(
+    selectGetStudentsBySearchTermError
+  );
 
   const currentClass = useSelector(selectCurrentClass);
   const getCurrentClassSatuts = useSelector(selectGetCurrentClassStatus);
@@ -143,7 +159,8 @@ function ClassComponent() {
                     <span>/</span>
                     <span>{currentClass.n_of_meetings}</span>
                     <span>
-                      ({currentClass.n_of_meetings !== 0
+                      (
+                      {currentClass.n_of_meetings !== 0
                         ? (
                             (student.present_n_times /
                               currentClass.n_of_meetings) *
@@ -218,20 +235,52 @@ function ClassComponent() {
             onClick={(e) => e.stopPropagation()}
             className="bg-white p-4 rounded-lg flex flex-col items-center justify-center space-y-5"
           >
-            <div className="flex items-center space-x-2">
-              <input
-                type="text"
-                placeholder="Search by Name or Id"
-                className="w-full p-2 rounded-lg"
+            <div className="flex flex-col justify-center items-center space-y-2">
+              <div className="w-full flex items-center justify-between space-x-2">
+                <input
+                  type="text"
+                  placeholder="Search by Name or Id"
+                  className="w-full p-2 rounded-lg"
+                  value={studentGetSearchTerm}
+                  onChange={(e) => {
+                    setStudentGetSearchTerm(e.target.value);
+                  }}
+                />
+                <button
+                  className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:opacity-60"
+                  onClick={() => {
+                    dispatch(getStudentsBySearchTerm(studentGetSearchTerm));
+                  }}
+                >
+                  Search
+                </button>
+              </div>
+              <StatusInfo
+                status={getStudentsBySearchTermStatus}
+                error={getStudentsBySearchTermError}
               />
-              <button
-                className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:opacity-60"
-                onClick={() => {
-                  setShowAddStudent(false);
-                }}
-              >
-                Search
-              </button>
+              <div className="flex items-center justify-center w-full spacey-1 flex-col">
+                {studentsSearch.map((student) => (
+                  <div
+                    key={student.id}
+                    className="flex items-center justify-between w-full"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <div>{student.name}</div>
+                      <div>{student.email}</div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <motion.div
+                        className="text-2xl hover:text-green-500 cursor-pointer"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        <MdAdd />
+                      </motion.div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </motion.div>
         </Backdrop>

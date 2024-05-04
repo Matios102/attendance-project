@@ -1,21 +1,33 @@
-import { StudentInfo } from "./Student";
+import { StudentForClass } from "./Student";
 
-export type Class = {
-  id: number | null;
+export type ClassWithStudents = {
+  id: number;
   name: string;
   description: string;
-  teacherId: number;
-  students: StudentInfo[];
-  weekDay: number;
-  startTime: string;
-  endTime: string;
-  createdAt: string;
-  updatedAt: string;
+  week_day: number;
+  start_time: string;
+  end_time: string;
+  teacher_id: number;
+  created_at: Date;
+  updated_at: Date;
+  n_of_meetings: number;
+  students: StudentForClass[];
+};
+
+export type ClassPublic = {
+  id: number;
+  name: string;
+  week_day: number;
+  start_time: string;
+  end_time: string;
+  teacher_id: number;
+  created_at: Date;
+  updated_at: Date;
 };
 
 export type ClassCreate = {
   name: string;
-  weekDay: number;
-  startTime: string;
-  endTime: string;
+  week_day: number;
+  start_time: string;
+  end_time: string;
 };

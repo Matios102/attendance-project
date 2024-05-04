@@ -1,21 +1,38 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { selectClassById } from "../../store/slices/Class";
 import { motion } from "framer-motion";
 import { SiGoogleclassroom } from "react-icons/si";
 import { MdAdd, MdDelete, MdList, MdTimer } from "react-icons/md";
 import { Backdrop } from "@mui/material";
 import { FaRegSadCry } from "react-icons/fa";
+import { useAppDispatch } from "../../store/store";
+import {
+  getClassById,
+  selectCurrentClass,
+  selectGetClassesError,
+  selectGetCurrentClassStatus,
+} from "../../store/slices/Class";
+import Page from "../../Components/Page";
+import StatusInfo from "../../Components/StatusInfo";
 
 function ClassComponent() {
   const { id } = useParams<{ id: string }>();
 
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const currentClass = useSelector((state) =>
-    selectClassById(state, Number(id))
-  );
+  useEffect(() => {
+    if (id) {
+      dispatch(getClassById(parseInt(id)));
+    } else {
+      navigate("/my-classes");
+    }
+  }, [dispatch, id, navigate]);
+
+  const currentClass = useSelector(selectCurrentClass);
+  const getCurrentClassSatuts = useSelector(selectGetCurrentClassStatus);
+  const getCurrentClassError = useSelector(selectGetClassesError);
 
   const [description, setDescription] = useState(
     currentClass?.description ? currentClass.description : ""
@@ -24,31 +41,21 @@ function ClassComponent() {
   const [showAddStudent, setShowAddStudent] = useState(false);
   const [showDeleteStudent, setShowDeleteStudent] = useState(false);
 
-  if (!currentClass) {
-    return <div>Class not found</div>;
+  console.log(currentClass);
+
+  if (currentClass === null) {
+    return (
+      <Page>
+        <StatusInfo
+          status={getCurrentClassSatuts}
+          error={getCurrentClassError}
+        />
+      </Page>
+    );
   }
 
-  const tempMeetingHistory = [
-    {
-      id: 1,
-      date: "2022-12-12",
-    },
-    {
-      id: 2,
-      date: "2022-12-13",
-    },
-    {
-      id: 3,
-      date: "2022-12-14",
-    },
-  ];
-
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
+    <Page>
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-1 text-5xl font-semibold mb-5">
           <h2>{currentClass.name}</h2>
@@ -57,7 +64,7 @@ function ClassComponent() {
         <div className="flex items-center space-x-1 text-6xl font-bold mb-5">
           <MdTimer />
           <div>
-            {currentClass.startTime}-{currentClass.endTime}
+            {currentClass.start_time}-{currentClass.end_time}
           </div>
         </div>
       </div>
@@ -132,10 +139,19 @@ function ClassComponent() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="flex space-x-1">
-                    <span>4</span>
+                    <span>{student.present_n_times}</span>
                     <span>/</span>
-                    <span>5</span>
-                    <span>(80%)</span>
+                    <span>{currentClass.n_of_meetings}</span>
+                    <span>
+                      ({currentClass.n_of_meetings !== 0
+                        ? (
+                            (student.present_n_times /
+                              currentClass.n_of_meetings) *
+                            100
+                          ).toFixed(2)
+                        : 0}
+                      %)
+                    </span>
                   </div>
                   <motion.div
                     className="text-2xl hover:text-red-500 cursor-pointer"
@@ -153,10 +169,11 @@ function ClassComponent() {
             ))}
           </div>
         </div>
+
         <div className="w-full p-2">
           <h4 className="text-2xl font-semibold mb-5">Meeting history</h4>
           <div className="flex flex-col space-y-2">
-            {tempMeetingHistory.length === 0 && (
+            {/* {tempMeetingHistory.length === 0 && (
               <div className="w-full text-center text-3xl font-semibold flex items-center space-x-2">
                 <FaRegSadCry />
                 <span>No meeting history</span>
@@ -182,7 +199,7 @@ function ClassComponent() {
                   </motion.div>
                 </div>
               </div>
-            ))}
+            ))} */}
           </div>
         </div>
       </div>
@@ -260,7 +277,7 @@ function ClassComponent() {
           </motion.div>
         </Backdrop>
       )}
-    </motion.div>
+    </Page>
   );
 }
 

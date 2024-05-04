@@ -1,5 +1,8 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import {
+  createSlice,
+  createAsyncThunk,  
+} from "@reduxjs/toolkit";
+import axios, { AxiosError } from "axios";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { User } from "../../Types/User";
@@ -31,29 +34,37 @@ export const register = createAsyncThunk(
     email: string;
     password: string;
   }) => {
-    const response = await axios.post(
-      `${process.env.REACT_APP_SERVER_URL}/users`,
-      {
-        name: name,
-        email: email,
-        password: password,
-      }
-    );
-    return response.data;
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_SERVER_URL}/users`,
+        {
+          name: name,
+          email: email,
+          password: password,
+        }
+      );
+      return response.data;
+    } catch (e) {
+      throw e;
+    }
   }
 );
 
 export const login = createAsyncThunk(
   "user/login",
   async ({ email, password }: { email: string; password: string }) => {
-    const response = await axios.post(
-      `${process.env.REACT_APP_SERVER_URL}/login`,
-      {
-        email: email,
-        password: password,
-      }
-    );
-    return response.data;
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_SERVER_URL}/login`,
+        {
+          email: email,
+          password: password,
+        }
+      );
+      return response.data;
+    } catch (e) {
+      throw e;
+    }
   }
 );
 
@@ -62,9 +73,13 @@ const UserSlice = createSlice({
   initialState: {
     loginStatus: "idle",
     registerStatus: "idle",
+    loginError: null,
+    registerError: null,
   } as {
     loginStatus: Status;
     registerStatus: Status;
+    loginError: AxiosError | null;
+    registerError: AxiosError | null;
   },
   reducers: {
     logout: (state) => {
@@ -81,8 +96,9 @@ const UserSlice = createSlice({
         const token = action.payload.access_token;
         extractToken(token);
       })
-      .addCase(register.rejected, (state) => {
+      .addCase(register.rejected, (state, action) => {
         state.registerStatus = "failed";
+        state.registerError = action.error as AxiosError;
       })
       .addCase(login.pending, (state) => {
         state.loginStatus = "loading";
@@ -92,16 +108,17 @@ const UserSlice = createSlice({
         const token = action.payload.access_token;
         extractToken(token);
       })
-      .addCase(login.rejected, (state) => {
+      .addCase(login.rejected, (state, action) => {
         state.loginStatus = "failed";
+        state.loginError = action.error as AxiosError;
       });
   },
 });
 
-export const selectRegisterStatus = (state: any): string =>
+export const selectRegisterStatus = (state: any): Status =>
   state.user.registerStatus;
 
-export const selectLoginStatus = (state: any): string => state.user.loginStatus;
+export const selectLoginStatus = (state: any): Status => state.user.loginStatus;
 
 export const selectUser = (): User => {
   return JSON.parse(Cookies.get("user") || "{}");
@@ -109,6 +126,14 @@ export const selectUser = (): User => {
 
 export const selectIsLoggedIn = (): boolean => {
   return !!Cookies.get("user") && !!Cookies.get("token");
+};
+
+export const selectLoginError = (state: any): AxiosError | null => {
+  return state.user.loginError;
+};
+
+export const selectRegisterError = (state: any): AxiosError | null => {
+  return state.user.registerError;
 };
 
 export const { logout } = UserSlice.actions;

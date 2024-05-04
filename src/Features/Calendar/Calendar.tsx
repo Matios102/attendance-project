@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { createClass, getClasses, selectClassList } from "../../store/slices/Class";
+import {
+  createClass,
+  getClasses,
+  removeClass,
+  selectClassList,
+} from "../../store/slices/Class";
 import { Backdrop } from "@mui/material";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -35,12 +40,12 @@ function Calendar() {
   const handleHourClick = ({ day, hour }: HourSelection) => {
     const formattedHour = `${hour < 10 ? "0" : ""}${hour}:00`;
     const classData = classes.find(
-      (c) => c.weekDay === day && c.startTime === formattedHour
+      (c) => c.week_day === day && c.start_time === formattedHour
     );
     if (classData) {
       setNewClassName(classData.name);
-      setNewClassStartTime(classData.startTime);
-      setNewClassEndTime(classData.endTime);
+      setNewClassStartTime(classData.start_time);
+      setNewClassEndTime(classData.end_time);
     } else {
       setNewClassName("");
       setNewClassStartTime(formattedHour);
@@ -54,9 +59,9 @@ function Calendar() {
     if (selectedHour) {
       const newClass: ClassCreate = {
         name: newClassName,
-        weekDay: selectedHour.day,
-        startTime: newClassStartTime,
-        endTime: newClassEndTime,
+        week_day: selectedHour.day,
+        start_time: newClassStartTime,
+        end_time: newClassEndTime,
       };
       dispatch(createClass(newClass));
       setSelectedHour(null);
@@ -64,7 +69,7 @@ function Calendar() {
   };
 
   const handleRemoveClass = (id: number) => {
-    //
+    dispatch(removeClass(id));
   };
 
   const calculateHeight = (start: string, end: string): string => {
@@ -94,8 +99,8 @@ function Calendar() {
                 {classes
                   .filter(
                     (c) =>
-                      c.weekDay === index &&
-                      c.startTime.split(":")[0] === `${hour}`
+                      c.week_day === index &&
+                      c.start_time.split(":")[0] === `${hour}`
                   )
                   .map((c) => (
                     <div
@@ -105,14 +110,14 @@ function Calendar() {
                         top: 0,
                         left: 0,
                         right: 0,
-                        height: calculateHeight(c.startTime, c.endTime),
+                        height: calculateHeight(c.start_time, c.end_time),
                         padding: "5px",
                       }}
                       className="flex flex-col justify-between bg-gray-200 text-xs relative text-gray-600 rounded-lg z-20 backdrop-blur-lg opacity-90"
                     >
                       <div className="w-full flex items-center justify-between">
                         <div>
-                          {c.name} ({c.startTime}-{c.endTime})
+                          {c.name} ({c.start_time}-{c.end_time})
                         </div>
                         <motion.div
                           className="text-2xl hover:text-red-500 cursor-pointer"

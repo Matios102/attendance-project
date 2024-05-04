@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MdHome, MdArrowBack } from "react-icons/md";
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { selectClassList } from "../store/slices/Class";
 
 function TopBar() {
-  const location = useLocation();
   const [currentTime, setCurrentTime] = useState(new Date());
 
   const navigate = useNavigate();
@@ -21,7 +20,7 @@ function TopBar() {
     };
   }, []);
 
-  const formatTimeToMinutes = (time: string) => {
+  const formatTimeToMinutes = (time: string) => {    
     const [hours, minutes] = time.split(":").map(Number);
     return hours * 60 + minutes;
   };
@@ -86,8 +85,8 @@ function TopBar() {
       </div>
       <div className="text-2xl text-gray-600 overflow-hidden w-[480px] h-20 relative flex items-end">
         {classes.map((cls) => {
-          const start = formatTimeToMinutes(cls.startTime);
-          const end = formatTimeToMinutes(cls.endTime);
+          const start = formatTimeToMinutes(cls.start_time);
+          const end = formatTimeToMinutes(cls.end_time);
           const leftPosition = start - currentMinutes + 240;
           const width = end - start;
 

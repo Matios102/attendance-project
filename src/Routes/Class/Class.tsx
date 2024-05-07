@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { SiGoogleclassroom } from "react-icons/si";
-import { MdAdd, MdDelete, MdList, MdTimer } from "react-icons/md";
+import { MdAdd, MdDelete, MdTimer } from "react-icons/md";
 import { Backdrop } from "@mui/material";
 import { FaRegSadCry } from "react-icons/fa";
 import { useAppDispatch } from "../../store/store";
@@ -16,9 +16,15 @@ import {
 import Page from "../../Components/Page";
 import StatusInfo from "../../Components/StatusInfo";
 import {
+  addStudentToClass,
   getStudentsBySearchTerm,
+  removeStudentFromClass,
+  resetAddStudentToClassStatus,
+  resetRemoveStudentFromClassStatus,
+  selectAddStudentToClassStatus,
   selectGetStudentsBySearchTermError,
   selectGetStudentsBySearchTermStatus,
+  selectRemoveStudentFromClassStatus,
   selectStudents,
 } from "../../store/slices/Student";
 
@@ -30,6 +36,11 @@ function ClassComponent() {
 
   const [studentGetSearchTerm, setStudentGetSearchTerm] = useState("");
 
+  const addStudentToClassStatus = useSelector(selectAddStudentToClassStatus);
+  const removeStudentFromClassStatus = useSelector(
+    selectRemoveStudentFromClassStatus
+  );
+
   useEffect(() => {
     if (id) {
       dispatch(getClassById(parseInt(id)));
@@ -37,6 +48,19 @@ function ClassComponent() {
       navigate("/my-classes");
     }
   }, [dispatch, id, navigate]);
+
+  useEffect(() => {
+    if (id !== null && id !== undefined) {
+      if (addStudentToClassStatus === "succeeded") {
+        dispatch(resetAddStudentToClassStatus());
+        dispatch(getClassById(parseInt(id)));
+      }
+      if (removeStudentFromClassStatus === "succeeded") {
+        dispatch(resetRemoveStudentFromClassStatus());
+        dispatch(getClassById(parseInt(id)));
+      }
+    }
+  });
 
   const studentsSearch = useSelector(selectStudents);
   const getStudentsBySearchTermStatus = useSelector(
@@ -56,8 +80,7 @@ function ClassComponent() {
   const [inDesciprionEdit, setInDescriptionEdit] = useState(false);
   const [showAddStudent, setShowAddStudent] = useState(false);
   const [showDeleteStudent, setShowDeleteStudent] = useState(false);
-
-  console.log(currentClass);
+  const [studentIdToDelete, setStudentIdToDelete] = useState<number | null>(null);
 
   if (currentClass === null) {
     return (
@@ -176,6 +199,7 @@ function ClassComponent() {
                     whileTap={{ scale: 0.9 }}
                     onClick={(e) => {
                       e.stopPropagation();
+                      setStudentIdToDelete(student.id);
                       setShowDeleteStudent(true);
                     }}
                   >
@@ -236,7 +260,13 @@ function ClassComponent() {
             className="bg-white p-4 rounded-lg flex flex-col items-center justify-center space-y-5"
           >
             <div className="flex flex-col justify-center items-center space-y-2">
-              <div className="w-full flex items-center justify-between space-x-2">
+              <form
+                className="w-full flex items-center justify-between space-x-2"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  dispatch(getStudentsBySearchTerm(studentGetSearchTerm));
+                }}
+              >
                 <input
                   type="text"
                   placeholder="Search by Name or Id"
@@ -248,36 +278,45 @@ function ClassComponent() {
                 />
                 <button
                   className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:opacity-60"
-                  onClick={() => {
-                    dispatch(getStudentsBySearchTerm(studentGetSearchTerm));
-                  }}
+                  type="submit"
                 >
                   Search
                 </button>
-              </div>
+              </form>
+
               <StatusInfo
                 status={getStudentsBySearchTermStatus}
                 error={getStudentsBySearchTermError}
               />
               <div className="flex items-center justify-center w-full spacey-1 flex-col">
+                {studentsSearch.length === 0 && (
+                  <div className="w-full text-center text-3xl font-semibold flex items-center space-x-2">
+                    <FaRegSadCry />
+                    <span>No students found</span>
+                  </div>
+                )}
                 {studentsSearch.map((student) => (
                   <div
                     key={student.id}
                     className="flex items-center justify-between w-full"
                   >
-                    <div className="flex items-center space-x-2">
-                      <div>{student.name}</div>
-                      <div>{student.email}</div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <motion.div
-                        className="text-2xl hover:text-green-500 cursor-pointer"
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                      >
-                        <MdAdd />
-                      </motion.div>
-                    </div>
+                    <div>{student.name}</div>
+                    <div>{student.email}</div>
+                    <motion.button
+                      className="text-2xl hover:text-green-500 cursor-pointer"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => {
+                        dispatch(
+                          addStudentToClass({
+                            studentId: student.id,
+                            classId: currentClass.id,
+                          })
+                        );
+                      }}
+                    >
+                      <MdAdd />
+                    </motion.button>
                   </div>
                 ))}
               </div>
@@ -307,6 +346,7 @@ function ClassComponent() {
               <div className="flex space-x-1 items-center">
                 <button
                   onClick={() => {
+                    dispatch(removeStudentFromClass({ studentId: studentIdToDelete!, classId: currentClass.id }));
                     setShowDeleteStudent(false);
                   }}
                   className="bg-red-500 text-white px-4 py-2 rounded-lg hover:opacity-60"

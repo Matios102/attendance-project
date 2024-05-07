@@ -34,10 +34,10 @@ export const createClass = createAsyncThunk(
 
 export const getClassById = createAsyncThunk(
   "class/getClassById",
-  async (id: number) => {
+  async (class_id: number) => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_SERVER_URL}/classes/${id}`,
+        `${process.env.REACT_APP_SERVER_URL}/classes/${class_id}`,
         { withCredentials: true }
       );
       return response.data;
@@ -49,12 +49,12 @@ export const getClassById = createAsyncThunk(
 
 export const removeClass = createAsyncThunk(
   "class/removeClass",
-  async (id: number) => {
+  async (class_id: number) => {
     try {
-      await axios.delete(`${process.env.REACT_APP_SERVER_URL}/classes/${id}`, {
+      await axios.delete(`${process.env.REACT_APP_SERVER_URL}/classes/${class_id}`, {
         withCredentials: true,
       });
-      return id;
+      return class_id;
     } catch (e) {
       throw e;
     }

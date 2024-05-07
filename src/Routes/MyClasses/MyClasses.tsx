@@ -4,6 +4,9 @@ import { MdCalendarMonth } from "react-icons/md";
 import StatusInfo from "../../Components/StatusInfo";
 import { useSelector } from "react-redux";
 import {
+  getClasses,
+  resetCreateClassStatus,
+  resetRemoveClassStatus,
   selectCreateClassError,
   selectCreateClassStatus,
   selectGetClassesError,
@@ -12,8 +15,11 @@ import {
   selectRemoveClassStatus,
 } from "../../store/slices/Class";
 import Page from "../../Components/Page";
+import { useAppDispatch } from "../../store/store";
 
 function MyClasses() {
+  const dispatch = useAppDispatch();
+
   const getClassesStatus = useSelector(selectGetClassesStatus);
   const getClassesError = useSelector(selectGetClassesError);
   const createClassStatus = useSelector(selectCreateClassStatus);
@@ -21,23 +27,17 @@ function MyClasses() {
   const removeClassStatus = useSelector(selectRemoveClassStatus);
   const removeClassError = useSelector(selectRemoveClassError);
 
-  console.log(
-    getClassesStatus,
-    getClassesError,
-    createClassStatus,
-    createClassError,
-    removeClassStatus,
-    removeClassError
-  );
-
   useEffect(() => {
-    if (
-      createClassStatus === "succeeded" ||
-      removeClassStatus === "succeeded"
-    ) {
-      window.location.reload();
+    if (createClassStatus === "succeeded") {
+      dispatch(resetCreateClassStatus());
+      dispatch(getClasses());
     }
-  }, [createClassStatus, removeClassStatus]);
+
+    if (removeClassStatus === "succeeded") {
+      dispatch(resetRemoveClassStatus());
+      dispatch(getClasses());
+    }
+  }, [createClassStatus, dispatch, removeClassStatus]);
 
   return (
     <Page>

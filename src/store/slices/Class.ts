@@ -51,9 +51,12 @@ export const removeClass = createAsyncThunk(
   "class/removeClass",
   async (class_id: number) => {
     try {
-      await axios.delete(`${process.env.REACT_APP_SERVER_URL}/classes/${class_id}`, {
-        withCredentials: true,
-      });
+      await axios.delete(
+        `${process.env.REACT_APP_SERVER_URL}/classes/${class_id}`,
+        {
+          withCredentials: true,
+        }
+      );
       return class_id;
     } catch (e) {
       throw e;
@@ -86,7 +89,17 @@ const ClassSlice = createSlice({
     createClassError: AxiosError | null;
     removeClassError: AxiosError | null;
   },
-  reducers: {},
+  reducers: {
+    resetGetClassesStatus: (state) => {
+      state.getClassesStatus = "idle";
+    },
+    resetCreateClassStatus: (state) => {
+      state.createClassStatus = "idle";
+    },
+    resetRemoveClassStatus: (state) => {
+      state.removeClassStatus = "idle";
+    },
+  },
   extraReducers(builder) {
     builder.addCase(getClasses.fulfilled, (state, action) => {
       state.classList = action.payload;
@@ -166,5 +179,11 @@ export const selectCreateClassError = (state: any): AxiosError | null =>
 
 export const selectRemoveClassError = (state: any): AxiosError | null =>
   state.class.removeClassError;
+
+export const {
+  resetGetClassesStatus,
+  resetCreateClassStatus,
+  resetRemoveClassStatus,
+} = ClassSlice.actions;
 
 export default ClassSlice.reducer;

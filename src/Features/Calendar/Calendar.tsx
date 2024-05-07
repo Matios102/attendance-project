@@ -29,6 +29,8 @@ function Calendar() {
 
   const classes = useSelector(selectClassList);
 
+  console.log(classes);
+
   const [selectedHour, setSelectedHour] = useState<HourSelection | null>(null);
   const [newClassName, setNewClassName] = useState<string>("");
   const [newClassStartTime, setNewClassStartTime] = useState<string>("");
@@ -36,7 +38,7 @@ function Calendar() {
   const [open, setOpen] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
-
+  
   const handleHourClick = ({ day, hour }: HourSelection) => {
     const formattedHour = `${hour < 10 ? "0" : ""}${hour}:00`;
     const classData = classes.find(
@@ -75,8 +77,15 @@ function Calendar() {
   const calculateHeight = (start: string, end: string): string => {
     const startTime = parseInt(start.split(":")[0]);
     const endTime = parseInt(end.split(":")[0]);
+    console.log(startTime, endTime);
+    console.log(`${(endTime - startTime) * 50}px`);
     return `${(endTime - startTime) * 50}px`;
   };
+
+  const calculateTop = (start: string): string => {
+    const timeFromEven = parseInt(start.split(":")[1]);    
+    return `${timeFromEven / 60 * 50}px`;
+  }
 
   return (
     <div className="flex items-center justify-center space-x-2">
@@ -86,7 +95,7 @@ function Calendar() {
           <div>
             {Array.from({ length: 12 }, (_, i) => i + 8).map((hour) => (
               <div
-                key={hour}
+                key={hour + day}
                 onClick={() => handleHourClick({ day: index, hour })}
                 style={{
                   position: "relative",
@@ -98,16 +107,16 @@ function Calendar() {
                 {hour}:00
                 {classes
                   .filter(
-                    (c) =>
+                    (c) =>                                
                       c.week_day === index &&
-                      c.start_time.split(":")[0] === `${hour}`
+                      parseInt(c.start_time.split(":")[0]) === hour
                   )
                   .map((c) => (
                     <div
                       key={c.id}
                       style={{
                         position: "absolute",
-                        top: 0,
+                        top: calculateTop(c.start_time),
                         left: 0,
                         right: 0,
                         height: calculateHeight(c.start_time, c.end_time),

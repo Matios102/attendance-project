@@ -2,12 +2,15 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ClassCreate, ClassPublic, ClassWithStudents } from "../../Types/Class";
 import axios, { AxiosError } from "axios";
 import { Status } from "../../Types/Status";
+import Util from "../../Util";
 
 export const getClasses = createAsyncThunk("class/getClasses", async () => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_SERVER_URL}/classes/`,
-      { withCredentials: true }
+      `${process.env.REACT_APP_SERVER_URL}/classes/`, {
+        headers: Util.getHeader(),
+        withCredentials: true
+      }      
     );
     return response.data;
   } catch (e) {
@@ -22,7 +25,10 @@ export const createClass = createAsyncThunk(
       const response = await axios.post(
         `${process.env.REACT_APP_SERVER_URL}/classes/`,
         newClass,
-        { withCredentials: true }
+        {
+          headers: Util.getHeader(),
+          withCredentials: true
+        }
       );
       return response.data;
     } catch (e) {
@@ -38,7 +44,10 @@ export const getClassById = createAsyncThunk(
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER_URL}/classes/${class_id}`,
-        { withCredentials: true }
+        {
+          headers: Util.getHeader(),
+          withCredentials: true
+        }
       );
       return response.data;
     } catch (e) {
@@ -54,7 +63,8 @@ export const removeClass = createAsyncThunk(
       await axios.delete(
         `${process.env.REACT_APP_SERVER_URL}/classes/${class_id}`,
         {
-          withCredentials: true,
+          headers: Util.getHeader(),
+          withCredentials: true
         }
       );
       return class_id;

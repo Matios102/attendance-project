@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { StudentBase } from "../../Types/Student";
 import axios, { AxiosError } from "axios";
 import { Status } from "../../Types/Status";
+import Util from "../../Util";
 
 export const getStudentsBySearchTerm = createAsyncThunk(
   "student/getStudentsBySearchTerm",
@@ -9,7 +10,10 @@ export const getStudentsBySearchTerm = createAsyncThunk(
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER_URL}/students/${searchTerm}`,
-        { withCredentials: true }
+        {
+          headers: Util.getHeader(),
+          withCredentials: true,
+        }
       );
       return response.data;
     } catch (e) {
@@ -24,8 +28,10 @@ export const addStudentToClass = createAsyncThunk(
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_SERVER_URL}/students/${studentId}/class/${classId}`,
-        {},
-        { withCredentials: true }
+        {
+          headers: Util.getHeader(),
+          withCredentials: true,
+        }
       );
       return response.data;
     } catch (e) {
@@ -40,7 +46,10 @@ export const removeStudentFromClass = createAsyncThunk(
     try {
       const response = await axios.delete(
         `${process.env.REACT_APP_SERVER_URL}/students/${studentId}/class/${classId}`,
-        { withCredentials: true }
+        {
+          headers: Util.getHeader(),
+          withCredentials: true,
+        }
       );
       return response.data;
     } catch (e) {

@@ -1,14 +1,20 @@
 import { StudentMeetingInfo } from "./Student";
 
-export type Meeting = {
-  id: number;
-  teacherId: number;
-  classId: number;
-  studentsAttendance: StudentMeetingInfo[];
-  weekDay: number;
-  startTime: string;
-  endTime: string;
+
+export type MeetingCreate = {
+  teacher_id: number;
+  class_id: number;
   date: string;
-  createdAt: string;
-  updatedAt: string;
+
 };
+
+export type MeetingPublic = {
+  id: number;
+  cancelled: boolean;
+  created_at?: string;
+  updated_at?: string;
+} & MeetingCreate;
+
+export type MeetingWithStudents = {
+  students: StudentMeetingInfo[];
+} & MeetingPublic;

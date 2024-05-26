@@ -28,9 +28,7 @@ function Calendar() {
   }, [dispatch]);
 
   const classes = useSelector(selectClassList);
-
-  console.log(classes);
-
+  
   const [selectedHour, setSelectedHour] = useState<HourSelection | null>(null);
   const [newClassName, setNewClassName] = useState<string>("");
   const [newClassStartTime, setNewClassStartTime] = useState<string>("");
@@ -76,9 +74,7 @@ function Calendar() {
 
   const calculateHeight = (start: string, end: string): string => {
     const startTime = parseInt(start.split(":")[0]);
-    const endTime = parseInt(end.split(":")[0]);
-    console.log(startTime, endTime);
-    console.log(`${(endTime - startTime) * 50}px`);
+    const endTime = parseInt(end.split(":")[0]);    
     return `${(endTime - startTime) * 50}px`;
   };
 

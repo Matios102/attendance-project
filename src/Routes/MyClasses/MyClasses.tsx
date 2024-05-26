@@ -11,14 +11,17 @@ import {
   selectCreateClassStatus,
   selectGetClassesError,
   selectGetClassesStatus,
+  selectNewClassId,
   selectRemoveClassError,
   selectRemoveClassStatus,
 } from "../../store/slices/Class";
 import Page from "../../Components/Page";
 import { useAppDispatch } from "../../store/store";
+import { useNavigate } from "react-router-dom";
 
 function MyClasses() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const getClassesStatus = useSelector(selectGetClassesStatus);
   const getClassesError = useSelector(selectGetClassesError);
@@ -26,18 +29,19 @@ function MyClasses() {
   const createClassError = useSelector(selectCreateClassError);
   const removeClassStatus = useSelector(selectRemoveClassStatus);
   const removeClassError = useSelector(selectRemoveClassError);
+  const newClassId = useSelector(selectNewClassId);
 
   useEffect(() => {
     if (createClassStatus === "succeeded") {
       dispatch(resetCreateClassStatus());
-      dispatch(getClasses());
+      dispatch(getClasses());          
     }
 
     if (removeClassStatus === "succeeded") {
       dispatch(resetRemoveClassStatus());
       dispatch(getClasses());
     }
-  }, [createClassStatus, dispatch, removeClassStatus]);
+  }, [createClassStatus, dispatch, navigate, newClassId, removeClassStatus]);
 
   return (
     <Page>

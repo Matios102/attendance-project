@@ -28,6 +28,7 @@ export const addStudentToClass = createAsyncThunk(
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_SERVER_URL}/students/${studentId}/class/${classId}`,
+        {},
         {
           headers: Util.getHeader(),
           withCredentials: true,

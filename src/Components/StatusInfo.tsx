@@ -9,8 +9,7 @@ type Props = {
   successMessage?: string;
 };
 
-function StatusInfo({ status, error, successMessage = "" }: Props) {
-  console.log(status, error);
+function StatusInfo({ status, error, successMessage = "" }: Props) {  
   if (status === "idle") {
     return <></>;
   } else if (status === "succeeded") {

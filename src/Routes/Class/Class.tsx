@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { SiGoogleclassroom } from "react-icons/si";
-import { MdAdd, MdDelete, MdTimer } from "react-icons/md";
+import { MdAdd, MdDelete, MdList, MdTimer } from "react-icons/md";
 import { Backdrop } from "@mui/material";
 import { FaRegSadCry } from "react-icons/fa";
 import { useAppDispatch } from "../../store/store";
@@ -27,6 +27,10 @@ import {
   selectRemoveStudentFromClassStatus,
   selectStudents,
 } from "../../store/slices/Student";
+import {
+  getMeetingsForClass,
+  selectMeetingsForClass,
+} from "../../store/slices/Meeting";
 
 function ClassComponent() {
   const { id } = useParams<{ id: string }>();
@@ -44,6 +48,7 @@ function ClassComponent() {
   useEffect(() => {
     if (id) {
       dispatch(getClassById(parseInt(id)));
+      dispatch(getMeetingsForClass(parseInt(id)));
     } else {
       navigate("/my-classes");
     }
@@ -73,6 +78,7 @@ function ClassComponent() {
   const currentClass = useSelector(selectCurrentClass);
   const getCurrentClassSatuts = useSelector(selectGetCurrentClassStatus);
   const getCurrentClassError = useSelector(selectGetClassesError);
+  const meetingsForClass = useSelector(selectMeetingsForClass);
 
   const [description, setDescription] = useState(
     currentClass?.description ? currentClass.description : ""
@@ -80,7 +86,9 @@ function ClassComponent() {
   const [inDesciprionEdit, setInDescriptionEdit] = useState(false);
   const [showAddStudent, setShowAddStudent] = useState(false);
   const [showDeleteStudent, setShowDeleteStudent] = useState(false);
-  const [studentIdToDelete, setStudentIdToDelete] = useState<number | null>(null);
+  const [studentIdToDelete, setStudentIdToDelete] = useState<number | null>(
+    null
+  );
 
   if (currentClass === null) {
     return (
@@ -214,33 +222,63 @@ function ClassComponent() {
         <div className="w-full p-2">
           <h4 className="text-2xl font-semibold mb-5">Meeting history</h4>
           <div className="flex flex-col space-y-2">
-            {/* {tempMeetingHistory.length === 0 && (
-              <div className="w-full text-center text-3xl font-semibold flex items-center space-x-2">
-                <FaRegSadCry />
-                <span>No meeting history</span>
-              </div>
-            )}
-            {tempMeetingHistory.map((meeting) => (
-              <div
-                key={meeting.id}
-                className="flex items-center justify-between"
-              >
-                <div>{meeting.date}</div>
-                <div className="flex items-center space-x-2">
-                  <motion.div
-                    className="text-2xl hover:text-fuchsia-500 cursor-pointer flex space-x-1 items-center"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => {
-                      navigate(`/meeting/${meeting.id}`);
-                    }}
-                  >
-                    <span className="text-sm font-semibold">Attendance</span>
-                    <MdList />
-                  </motion.div>
+            {meetingsForClass !== undefined &&
+              meetingsForClass.length === 0 && (
+                <div className="w-full text-center text-3xl font-semibold flex items-center space-x-2">
+                  <FaRegSadCry />
+                  <span>No meeting history</span>
                 </div>
-              </div>
-            ))} */}
+              )}
+            {meetingsForClass !== undefined &&
+              meetingsForClass.map((meeting) => (
+                <div
+                  key={meeting.id}
+                  className="flex items-center justify-between relative p-2 border-2 rounded-lg overflow-hidden"
+                >
+                  {meeting.cancelled && (
+                    <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-neutral-300 bg-opacity-70 cursor-not-allowed">
+                      <span className="text-white font-bold text-2xl drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
+                        Cancelled
+                      </span>
+                    </div>
+                  )}
+                  {new Date(meeting.date) < new Date() && (
+                    <div className="bg-red-500 text-white p-1 rounded-lg">
+                      Past meeting
+                    </div>
+                  )}
+                  {new Date(meeting.date) > new Date() && (
+                    <div className="bg-yellow-500 text-white p-1 rounded-lg">
+                      Upcoming meeting
+                    </div>
+                  )}
+                  {new Date(meeting.date) === new Date() && (
+                    <div className="bg-green-500 text-white p-1 rounded-lg">
+                      Today's meeting
+                    </div>
+                  )}
+                  <div>
+                    <span className="text-2xl font-semibold">
+                      Meeting date:
+                    </span>{" "}
+                    <span className="text-xl">{meeting.date}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <motion.div
+                      className="text-2xl hover:text-fuchsia-500 cursor-pointer flex space-x-1 items-center"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => {
+                        if (meeting.cancelled) return;
+                        navigate(`/meeting/${meeting.id}`);
+                      }}
+                    >
+                      <span className="text-sm font-semibold">Attendance</span>
+                      <MdList />
+                    </motion.div>
+                  </div>
+                </div>
+              ))}
           </div>
         </div>
       </div>
@@ -346,7 +384,12 @@ function ClassComponent() {
               <div className="flex space-x-1 items-center">
                 <button
                   onClick={() => {
-                    dispatch(removeStudentFromClass({ studentId: studentIdToDelete!, classId: currentClass.id }));
+                    dispatch(
+                      removeStudentFromClass({
+                        studentId: studentIdToDelete!,
+                        classId: currentClass.id,
+                      })
+                    );
                     setShowDeleteStudent(false);
                   }}
                   className="bg-red-500 text-white px-4 py-2 rounded-lg hover:opacity-60"

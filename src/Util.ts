@@ -5,10 +5,10 @@ export default class Util {
   public static getHeader(): AxiosRequestConfig["headers"] {
     const token = Cookies.get("token");
 
-    if (token) {
+    if (token) {      
       return {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        "Authorization": `Bearer ${token}`,
       };
     }
 

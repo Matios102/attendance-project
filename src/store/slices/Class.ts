@@ -32,7 +32,6 @@ export const createClass = createAsyncThunk(
       );
       return response.data;
     } catch (e) {
-      console.log(e);
       throw e;
     }
   }
@@ -78,6 +77,7 @@ const ClassSlice = createSlice({
   name: "class",
   initialState: {
     classList: [],
+    newClassId: null,
     currentClass: null,
     getCurrentClassStatus: "idle",
     getClassesStatus: "idle",
@@ -89,6 +89,7 @@ const ClassSlice = createSlice({
     removeClassError: null,
   } as {
     classList: ClassPublic[];
+    newClassId: number | null;
     currentClass: ClassWithStudents | null;
     getCurrentClassStatus: Status;
     getClassesStatus: Status;
@@ -127,7 +128,7 @@ const ClassSlice = createSlice({
     });
     builder.addCase(createClass.fulfilled, (state, action) => {
       state.createClassStatus = "succeeded";
-      state.classList.push(action.payload);
+      state.newClassId = action.payload; 
     });
     builder.addCase(createClass.rejected, (state, action) => {
       state.createClassStatus = "failed";
@@ -189,6 +190,9 @@ export const selectCreateClassError = (state: any): AxiosError | null =>
 
 export const selectRemoveClassError = (state: any): AxiosError | null =>
   state.class.removeClassError;
+
+export const selectNewClassId = (state: any): number =>
+  state.newClassId;
 
 export const {
   resetGetClassesStatus,

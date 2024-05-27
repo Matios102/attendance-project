@@ -22,11 +22,13 @@ function Home() {
 
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    dispatch(getCurrentMeeting());
+  useEffect(() => {    
+      dispatch(getCurrentMeeting());    
   }, [dispatch]);
 
   const currentMeeting = useSelector(selectCurrentMeeting);
+
+  console.log(currentMeeting);
 
   const navigateIfLoggedIn = (path: string): void => {
     if (!isLoggedIn) {

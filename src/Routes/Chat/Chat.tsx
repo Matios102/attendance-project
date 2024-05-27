@@ -52,8 +52,7 @@ function Chat() {
       messages: [{ role: "system", content: message }],
       model: "gpt-3.5-turbo",
     });
-
-    console.log(completion.choices[0]);
+    
     // setResponses([
     //   ...responses,
     //   { message, response: completion.choices[0] },

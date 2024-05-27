@@ -59,6 +59,32 @@ export const removeStudentFromClass = createAsyncThunk(
   }
 );
 
+export const sendStudentPicture = createAsyncThunk(
+  "student/sendStudentPicture",
+  async ({ picture }: { picture: File }) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", picture);
+      const response = await axios.post(
+        `${process.env.REACT_APP_SERVER_URL}/ml`,
+        formData,
+        {
+          headers: {
+            ...Util.getHeader(),
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        }
+      );
+
+      return response.data.detected_people_names as string[];
+    } catch (e) {
+      console.error("Error sending picture and receiving data:", e);
+      throw e;
+    }
+  }
+);
+
 const StudentSlice = createSlice({
   name: "student",
   initialState: {
@@ -69,6 +95,8 @@ const StudentSlice = createSlice({
     getStudentsBySearchTermError: null,
     addStudentToClassError: null,
     removeStudentFromClassError: null,
+    detectedPeopleNames: [],
+    detectionStatus: "idle",
   } as {
     students: StudentBase[];
     getStudentsBySearchTermStatus: Status;
@@ -77,6 +105,8 @@ const StudentSlice = createSlice({
     getStudentsBySearchTermError: AxiosError | null;
     addStudentToClassError: AxiosError | null;
     removeStudentFromClassError: AxiosError | null;
+    detectedPeopleNames: string[];
+    detectionStatus: Status;
   },
   reducers: {
     resetAddStudentToClassStatus: (state) => {
@@ -85,6 +115,9 @@ const StudentSlice = createSlice({
     resetRemoveStudentFromClassStatus: (state) => {
       state.removeStudentFromClassStatus = "idle";
     },
+    resetDetectionStatus: (state) => {
+      state.detectionStatus = "idle";
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(getStudentsBySearchTerm.pending, (state) => {
@@ -120,6 +153,16 @@ const StudentSlice = createSlice({
       state.removeStudentFromClassStatus = "failed";
       state.removeStudentFromClassError = action.error as AxiosError;
     });
+    builder.addCase(sendStudentPicture.fulfilled, (state, action) => {
+      state.detectedPeopleNames = action.payload;
+      state.detectionStatus = "succeeded";
+    });
+    builder.addCase(sendStudentPicture.rejected, (state) => {
+      state.detectionStatus = "failed";
+    });
+    builder.addCase(sendStudentPicture.pending, (state) => {
+      state.detectionStatus = "loading";
+    });
   },
 });
 
@@ -151,9 +194,18 @@ export const selectRemoveStudentFromClassError = (state: {
   student: { removeStudentFromClassError: AxiosError | null };
 }) => state.student.removeStudentFromClassError;
 
+export const selectDetectedPeopleNames = (state: {
+  student: { detectedPeopleNames: string[] };
+}) => state.student.detectedPeopleNames;
+
+export const selectDetectionStatus = (state: {
+  student: { detectionStatus: Status };
+}) => state.student.detectionStatus;
+
 export const {
   resetAddStudentToClassStatus,
   resetRemoveStudentFromClassStatus,
+  resetDetectionStatus
 } = StudentSlice.actions;
 
 export default StudentSlice.reducer;

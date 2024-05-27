@@ -24,8 +24,7 @@ export const getMeetingsForClass = createAsyncThunk(
 
 export const getMeetingById = createAsyncThunk(
   "meeting/getMeetingById",
-  async (meetingId: number) => {
-    console.log("meetingId", meetingId);
+  async (meetingId: number) => {    
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER_URL}/meetings/${meetingId}`,
@@ -43,8 +42,7 @@ export const getMeetingById = createAsyncThunk(
 
 export const cancelMeeting = createAsyncThunk(
   "meeting/cancelMeeting",
-  async (meetingId: number) => {
-    console.log("meetingId", meetingId);
+  async (meetingId: number) => {    
     try {
       const response = await axios.put(
         `${process.env.REACT_APP_SERVER_URL}/meetings/${meetingId}/cancel`,
@@ -66,14 +64,16 @@ export const getCurrentMeeting = createAsyncThunk(
   async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_SERVER_URL}/meetings/now`,
+        `${process.env.REACT_APP_SERVER_URL}/meetings`,
         {
           headers: Util.getHeader(),
           withCredentials: true,
         }
       );
+      console.log(response.data)
       return response.data;
-    } catch (e) {
+    } catch (e) {      
+      console.log(e)
       throw e;
     }
   }

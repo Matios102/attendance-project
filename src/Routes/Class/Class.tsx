@@ -101,8 +101,6 @@ function ClassComponent() {
     );
   }
 
-  console.log(currentClass, meetingsForClass)
-
   return (
     <Page>
       <div className="flex items-center justify-between">

@@ -7,10 +7,11 @@ import Util from "../../Util";
 export const getClasses = createAsyncThunk("class/getClasses", async () => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_SERVER_URL}/classes/`, {
+      `${process.env.REACT_APP_SERVER_URL}/classes/`,
+      {
         headers: Util.getHeader(),
-        withCredentials: true
-      }      
+        withCredentials: true,
+      }
     );
     return response.data;
   } catch (e) {
@@ -27,7 +28,7 @@ export const createClass = createAsyncThunk(
         newClass,
         {
           headers: Util.getHeader(),
-          withCredentials: true
+          withCredentials: true,
         }
       );
       return response.data;
@@ -45,7 +46,7 @@ export const getClassById = createAsyncThunk(
         `${process.env.REACT_APP_SERVER_URL}/classes/${class_id}`,
         {
           headers: Util.getHeader(),
-          withCredentials: true
+          withCredentials: true,
         }
       );
       return response.data;
@@ -63,7 +64,7 @@ export const removeClass = createAsyncThunk(
         `${process.env.REACT_APP_SERVER_URL}/classes/${class_id}`,
         {
           headers: Util.getHeader(),
-          withCredentials: true
+          withCredentials: true,
         }
       );
       return class_id;
@@ -128,7 +129,7 @@ const ClassSlice = createSlice({
     });
     builder.addCase(createClass.fulfilled, (state, action) => {
       state.createClassStatus = "succeeded";
-      state.newClassId = action.payload; 
+      state.newClassId = action.payload;
     });
     builder.addCase(createClass.rejected, (state, action) => {
       state.createClassStatus = "failed";
@@ -167,6 +168,14 @@ export const selectCurrentClass = (state: any): ClassWithStudents | null =>
 export const selectClassList = (state: any): ClassPublic[] =>
   state.class.classList;
 
+export const selectClassesForToday = (state: any): ClassPublic[] => {
+  const today = new Date();
+  return state.class.classList.filter(
+    (classItem: ClassPublic) =>
+      classItem.week_day === today.getDay()
+  );
+};
+
 export const selectGetCurrentClassStatus = (state: any): Status =>
   state.class.getCurrentClassStatus;
 
@@ -191,8 +200,7 @@ export const selectCreateClassError = (state: any): AxiosError | null =>
 export const selectRemoveClassError = (state: any): AxiosError | null =>
   state.class.removeClassError;
 
-export const selectNewClassId = (state: any): number =>
-  state.newClassId;
+export const selectNewClassId = (state: any): number => state.newClassId;
 
 export const {
   resetGetClassesStatus,

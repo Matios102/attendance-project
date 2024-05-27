@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import MenuTile from "../../Components/MenuTile";
 import MainCam from "../../Features/MainCam/MainCam";
 import { MdLogin, MdAdd, MdPerson, MdList } from "react-icons/md";
@@ -9,14 +9,24 @@ import { useSelector } from "react-redux";
 import { selectIsLoggedIn } from "../../store/slices/User";
 import { SiGoogleclassroom } from "react-icons/si";
 import { ImDatabase } from "react-icons/im";
-import { selectMeeting } from "../../store/slices/Meeting";
+import {
+  getCurrentMeeting,
+  selectCurrentMeeting,
+} from "../../store/slices/Meeting";
+import { useAppDispatch } from "../../store/store";
 
 function Home() {
   const isLoggedIn = useSelector(selectIsLoggedIn);
 
   const navigate = useNavigate();
 
-  const meeting = useSelector(selectMeeting);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(getCurrentMeeting());
+  }, [dispatch]);
+
+  const currentMeeting = useSelector(selectCurrentMeeting);
 
   const navigateIfLoggedIn = (path: string): void => {
     if (!isLoggedIn) {
@@ -97,10 +107,10 @@ function Home() {
         row_span={3}
         col_start={1}
         row_start={3}
-        disabled={!isLoggedIn || !meeting}
+        disabled={!isLoggedIn || !currentMeeting}
         onClick={() => {
-          if (meeting) {
-            navigateIfLoggedIn(`/meeting/${meeting.id}`);
+          if (currentMeeting) {
+            navigateIfLoggedIn(`/meeting/${currentMeeting.id}`);
           }
         }}
       >

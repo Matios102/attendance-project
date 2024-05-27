@@ -4,8 +4,8 @@ import { StudentMeetingInfo } from "./Student";
 export type MeetingCreate = {
   teacher_id: number;
   class_id: number;
-  date: string;
-
+  start_date: Date;
+  end_date: Date;
 };
 
 export type MeetingPublic = {

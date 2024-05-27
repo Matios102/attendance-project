@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { MdHome, MdArrowBack } from "react-icons/md";
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
-import { selectClassList } from "../store/slices/Class";
+import { selectClassesForToday, selectClassList } from "../store/slices/Class";
 
 function TopBar() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -29,7 +29,7 @@ function TopBar() {
     currentTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
   );
 
-  const classes = useSelector(selectClassList);
+  const classes = useSelector(selectClassesForToday);
 
   const generateTimelineStripes = () => {
     let stripes = [];

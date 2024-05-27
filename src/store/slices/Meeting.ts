@@ -41,15 +41,55 @@ export const getMeetingById = createAsyncThunk(
   }
 );
 
+export const cancelMeeting = createAsyncThunk(
+  "meeting/cancelMeeting",
+  async (meetingId: number) => {
+    console.log("meetingId", meetingId);
+    try {
+      const response = await axios.put(
+        `${process.env.REACT_APP_SERVER_URL}/meetings/${meetingId}/cancel`,
+        {},
+        {
+          headers: Util.getHeader(),
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } catch (e) {
+      throw e;
+    }
+  }
+);
+
+export const getCurrentMeeting = createAsyncThunk(
+  "meeting/getCurrentMeeting",
+  async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_URL}/meetings/now`,
+        {
+          headers: Util.getHeader(),
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } catch (e) {
+      throw e;
+    }
+  }
+);
+
 const MeetingSlice = createSlice({
   name: "meeting",
   initialState: {
     meeting: null,
+    currentMeeting: null,
     meetingsForClass: [] as MeetingPublic[],
     meetingStatus: "idle",
   } as {
     meeting: MeetingWithStudents | null;
     meetingsForClass: MeetingPublic[];
+    currentMeeting: MeetingPublic | null;
     meetingStatus: Status;
   },
   reducers: {},
@@ -74,6 +114,18 @@ const MeetingSlice = createSlice({
     builder.addCase(getMeetingById.rejected, (state) => {
       state.meetingStatus = "failed";
     });
+    builder.addCase(cancelMeeting.fulfilled, (state) => {
+      state.meetingStatus = "succeeded";
+    });
+    builder.addCase(cancelMeeting.pending, (state) => {
+      state.meetingStatus = "loading";
+    });
+    builder.addCase(cancelMeeting.rejected, (state) => {
+      state.meetingStatus = "failed";
+    });
+    builder.addCase(getCurrentMeeting.fulfilled, (state, action) => {
+      state.currentMeeting = action.payload;
+    });
   },
 });
 
@@ -85,5 +137,8 @@ export const selectMeetingsForClass = (state: any): MeetingPublic[] =>
 
 export const selectMeetingStatus = (state: any): Status =>
   state.meeting.meetingStatus;
+
+export const selectCurrentMeeting = (state: any): MeetingPublic =>
+  state.meeting.currentMeeting;
 
 export default MeetingSlice.reducer;

@@ -101,6 +101,8 @@ function ClassComponent() {
     );
   }
 
+  console.log(currentClass, meetingsForClass)
+
   return (
     <Page>
       <div className="flex items-center justify-between">
@@ -242,26 +244,27 @@ function ClassComponent() {
                       </span>
                     </div>
                   )}
-                  {new Date(meeting.date) < new Date() && (
+                  {new Date(meeting.end_date) < new Date() && (
                     <div className="bg-red-500 text-white p-1 rounded-lg">
                       Past meeting
                     </div>
                   )}
-                  {new Date(meeting.date) > new Date() && (
+                  {new Date(meeting.start_date) > new Date() && (
                     <div className="bg-yellow-500 text-white p-1 rounded-lg">
                       Upcoming meeting
                     </div>
                   )}
-                  {new Date(meeting.date) === new Date() && (
-                    <div className="bg-green-500 text-white p-1 rounded-lg">
-                      Today's meeting
-                    </div>
-                  )}
+                  {new Date(meeting.start_date) <= new Date() &&
+                    new Date(meeting.end_date) >= new Date() && (
+                      <div className="bg-green-500 text-white p-1 rounded-lg">
+                        Current meeting
+                      </div>
+                    )}
                   <div>
                     <span className="text-2xl font-semibold">
                       Meeting date:
                     </span>{" "}
-                    <span className="text-xl">{meeting.date}</span>
+                    <span className="text-xl">{new Date(meeting.start_date).toDateString()}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <motion.div

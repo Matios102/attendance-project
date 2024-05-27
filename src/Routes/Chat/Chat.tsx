@@ -1,67 +1,67 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@mui/material";
 import OpenAI from "openai";
 import { RiOpenaiFill } from "react-icons/ri";
 import { motion } from "framer-motion";
+import { Status } from "../../Types/Status";
+import StatusInfo from "../../Components/StatusInfo";
+import { useSelector } from "react-redux";
+import { useAppDispatch } from "../../store/store";
+import {
+  getAllData,
+  selectData,
+  selectDataLoadStatus,
+} from "../../store/slices/Main";
 
 const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 const openai = new OpenAI({ apiKey: apiKey, dangerouslyAllowBrowser: true });
 
 type Response = {
   message: string;
-  response: string;
+  response: string | null;
   dateTime: Date;
 };
 
 function Chat() {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(getAllData());
+  }, [dispatch]);
+
+  const data = useSelector(selectData);
+  const dataStatus = useSelector(selectDataLoadStatus);
+
   const [message, setMessage] = React.useState("");
-  const [responses, setResponses] = React.useState([
-    { message: "Hello", response: "Hi there!", dateTime: new Date() },
-    {
-      message: "How are you?",
-      response: "I'm doing great, thanks!",
-      dateTime: new Date(),
-    },
-    {
-      message: "What's the weather like today?",
-      response: "It's sunny and warm!",
-      dateTime: new Date(),
-    },
-    {
-      message: "Tell me a joke",
-      response:
-        "Why don't scientists trust atoms? Because they make up everything!",
-      dateTime: new Date(),
-    },
-    {
-      message: "Tell me a joke",
-      response:
-        "Why don't scientists trust atoms? Because they make up everything!",
-      dateTime: new Date(),
-    },
-    {
-      message: "Tell me a joke",
-      response:
-        "Why don't scientists trust atoms? Because they make up everything!",
-      dateTime: new Date(),
-    },
-  ] as Response[]);
+  const [responses, setResponses] = React.useState([] as Response[]);
+  const [status, setStatus] = React.useState("idle" as Status);
 
   async function sendRequest() {
+    setStatus("loading");
     const completion = await openai.chat.completions.create({
-      messages: [{ role: "system", content: message }],
+      messages: [
+        { role: "system", content: JSON.stringify(data) },
+        { role: "user", content: message },
+      ],
       model: "gpt-3.5-turbo",
     });
-    
-    // setResponses([
-    //   ...responses,
-    //   { message, response: completion.choices[0] },
-    // ]);
+
+    setResponses([
+      ...responses,
+      {
+        message,
+        response: completion.choices[0].message.content,
+        dateTime: new Date(),
+      },
+    ]);
+
+    setStatus("idle");
   }
 
   const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setMessage("");
+    if (dataStatus !== "succeeded") return;
     sendRequest();
   };
 
@@ -72,6 +72,7 @@ function Chat() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
+      <StatusInfo status={status} error={null} />
       <div className="relative w-full h-[70vh] bg-neutral-700 p-5 flex flex-col itmes-center justify-center rounded-lg">
         <div className="w-full flex flex-col items-center justify-center text-center my-5 space-x-2">
           <div className="w-full flex items-center justify-center">
@@ -117,7 +118,7 @@ function Chat() {
             color="primary"
             type="submit"
             className="w-1/4 h-full"
-            style={{ backgroundColor: "#00A67E" }}
+            style={{ backgroundColor: "#00A67E" }}                        
           >
             Send
           </Button>

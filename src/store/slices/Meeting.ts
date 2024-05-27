@@ -24,7 +24,7 @@ export const getMeetingsForClass = createAsyncThunk(
 
 export const getMeetingById = createAsyncThunk(
   "meeting/getMeetingById",
-  async (meetingId: number) => {    
+  async (meetingId: number) => {
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER_URL}/meetings/${meetingId}`,
@@ -42,7 +42,7 @@ export const getMeetingById = createAsyncThunk(
 
 export const cancelMeeting = createAsyncThunk(
   "meeting/cancelMeeting",
-  async (meetingId: number) => {    
+  async (meetingId: number) => {
     try {
       const response = await axios.put(
         `${process.env.REACT_APP_SERVER_URL}/meetings/${meetingId}/cancel`,
@@ -70,10 +70,9 @@ export const getCurrentMeeting = createAsyncThunk(
           withCredentials: true,
         }
       );
-      console.log(response.data)
       return response.data;
-    } catch (e) {      
-      console.log(e)
+    } catch (e) {
+      console.log(e);
       throw e;
     }
   }
@@ -125,6 +124,9 @@ const MeetingSlice = createSlice({
     });
     builder.addCase(getCurrentMeeting.fulfilled, (state, action) => {
       state.currentMeeting = action.payload;
+    });
+    builder.addCase(getCurrentMeeting.rejected, (state) => {
+      state.currentMeeting = null;
     });
   },
 });

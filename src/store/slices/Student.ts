@@ -85,6 +85,45 @@ export const sendStudentPicture = createAsyncThunk(
   }
 );
 
+export const createStudent = createAsyncThunk(
+  "user/createStudent",
+  async ({
+    name,
+    email,
+    pictures,
+  }: {
+    name: string;
+    email: string;
+    pictures: File[];
+  }) => {
+    const formData = new FormData();
+
+    formData.append("name", name);
+    formData.append("email", email);
+
+    pictures.forEach((picture, index) => {
+      formData.append(`pictures[${index}]`, picture, picture.name);
+    });
+
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_SERVER_URL}/students/`,
+        formData,
+        {
+          headers: {
+            ...Util.getHeader(),
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
 const StudentSlice = createSlice({
   name: "student",
   initialState: {
@@ -97,6 +136,7 @@ const StudentSlice = createSlice({
     removeStudentFromClassError: null,
     detectedPeopleNames: [],
     detectionStatus: "idle",
+    createStudentStatus: "idle",
   } as {
     students: StudentBase[];
     getStudentsBySearchTermStatus: Status;
@@ -107,6 +147,7 @@ const StudentSlice = createSlice({
     removeStudentFromClassError: AxiosError | null;
     detectedPeopleNames: string[];
     detectionStatus: Status;
+    createStudentStatus: Status;
   },
   reducers: {
     resetAddStudentToClassStatus: (state) => {
@@ -117,6 +158,9 @@ const StudentSlice = createSlice({
     },
     resetDetectionStatus: (state) => {
       state.detectionStatus = "idle";
+    },
+    resetCreateStudentStatus: (state) => {  
+      state.createStudentStatus = "idle";
     }
   },
   extraReducers: (builder) => {
@@ -163,6 +207,15 @@ const StudentSlice = createSlice({
     builder.addCase(sendStudentPicture.pending, (state) => {
       state.detectionStatus = "loading";
     });
+    builder.addCase(createStudent.pending, (state) => {
+      state.createStudentStatus = "loading";
+    });
+    builder.addCase(createStudent.fulfilled, (state) => {
+      state.createStudentStatus = "succeeded";
+    });
+    builder.addCase(createStudent.rejected, (state) => {
+      state.createStudentStatus = "failed";
+    });
   },
 });
 
@@ -202,10 +255,15 @@ export const selectDetectionStatus = (state: {
   student: { detectionStatus: Status };
 }) => state.student.detectionStatus;
 
+export const selectCreateStudentStatus = (state: {
+  student: { createStudentStatus: Status };
+}) => state.student.createStudentStatus;
+
 export const {
   resetAddStudentToClassStatus,
   resetRemoveStudentFromClassStatus,
-  resetDetectionStatus
+  resetDetectionStatus,
+  resetCreateStudentStatus,
 } = StudentSlice.actions;
 
 export default StudentSlice.reducer;

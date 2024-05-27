@@ -28,7 +28,6 @@ function Home() {
 
   const currentMeeting = useSelector(selectCurrentMeeting);
 
-  console.log(currentMeeting);
 
   const navigateIfLoggedIn = (path: string): void => {
     if (!isLoggedIn) {

@@ -4,6 +4,7 @@ import classReducer from "./slices/Class";
 import meetingReducer from "./slices/Meeting";
 import studentReducer from "./slices/Student";
 import mainReducer from "./slices/Main";
+import dataReducer from "./slices/Data";
 import { useDispatch } from "react-redux";
 
 export const store = configureStore({
@@ -13,6 +14,7 @@ export const store = configureStore({
     meeting: meetingReducer,
     student: studentReducer,
     main: mainReducer,
+    data: dataReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
   devTools: process.env.NODE_ENV !== "production",

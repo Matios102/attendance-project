@@ -77,7 +77,7 @@ export const sendStudentPicture = createAsyncThunk(
         }
       );
 
-      return response.data.detected_people_names as string[];
+       return response.data.detected_people as { id: number; name: string; role: string }[];
     } catch (e) {
       console.error("Error sending picture and receiving data:", e);
       throw e;
@@ -134,7 +134,7 @@ const StudentSlice = createSlice({
     getStudentsBySearchTermError: null,
     addStudentToClassError: null,
     removeStudentFromClassError: null,
-    detectedPeopleNames: [],
+    detectedPeople: [],
     detectionStatus: "idle",
     createStudentStatus: "idle",
   } as {
@@ -145,7 +145,7 @@ const StudentSlice = createSlice({
     getStudentsBySearchTermError: AxiosError | null;
     addStudentToClassError: AxiosError | null;
     removeStudentFromClassError: AxiosError | null;
-    detectedPeopleNames: string[];
+    detectedPeople: { id: number; name: string; role: string }[];
     detectionStatus: Status;
     createStudentStatus: Status;
   },
@@ -198,7 +198,7 @@ const StudentSlice = createSlice({
       state.removeStudentFromClassError = action.error as AxiosError;
     });
     builder.addCase(sendStudentPicture.fulfilled, (state, action) => {
-      state.detectedPeopleNames = action.payload;
+      state.detectedPeople = action.payload;
       state.detectionStatus = "succeeded";
     });
     builder.addCase(sendStudentPicture.rejected, (state) => {
@@ -248,8 +248,8 @@ export const selectRemoveStudentFromClassError = (state: {
 }) => state.student.removeStudentFromClassError;
 
 export const selectDetectedPeopleNames = (state: {
-  student: { detectedPeopleNames: string[] };
-}) => state.student.detectedPeopleNames;
+  student: { detectedPeople: { id: number; name: string; role: string }[] };
+}) => state.student.detectedPeople.map(person => person.name);
 
 export const selectDetectionStatus = (state: {
   student: { detectionStatus: Status };

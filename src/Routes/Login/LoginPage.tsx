@@ -29,7 +29,6 @@ function LoginPage() {
       navigate("/");
     }
   }, [loginStatus, registerStatus, navigate]);
-
   const handleSubmitLogin = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 

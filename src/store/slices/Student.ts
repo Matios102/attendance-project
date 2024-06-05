@@ -96,23 +96,33 @@ export const createStudent = createAsyncThunk(
     email: string;
     pictures: File[];
   }) => {
-    const formData = new FormData();
-
-    formData.append("name", name);
-    formData.append("email", email);
-
-    pictures.forEach((picture, index) => {
-      formData.append(`pictures[${index}]`, picture, picture.name);
+    const picturePromises = pictures.map((picture) => {
+      return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          resolve(reader.result as string);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(picture);
+      });
     });
 
     try {
+      const pictureData = await Promise.all(picturePromises);
+
+      const requestData = {
+        name,
+        email,
+        pictures: pictureData,
+      };
+
       const response = await axios.post(
-        `${process.env.REACT_APP_SERVER_URL}/students/`,
-        formData,
+        `${process.env.REACT_APP_SERVER_URL}/students/create`,
+        requestData,
         {
           headers: {
             ...Util.getHeader(),
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
           withCredentials: true,
         }
@@ -123,6 +133,7 @@ export const createStudent = createAsyncThunk(
     }
   }
 );
+
 
 const StudentSlice = createSlice({
   name: "student",
